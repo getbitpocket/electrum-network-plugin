@@ -1,0 +1,13 @@
+{
+  "name": "electrum-network-plugin",
+  "version": false,
+  "dependencies": {},
+  "ambientDependencies": {
+    "chrome": "registry:dt/chrome#0.0.0+20160317120654",
+    "chrome-app": "registry:dt/chrome-app#0.0.0+20160317120654",
+    "cordova": "registry:dt/cordova#0.0.0+20160316155526",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160317120654",
+    "filesystem": "registry:dt/filesystem#0.0.0+20160316155526",
+    "node": "registry:dt/node#4.0.0+20160319033040"
+  }
+}

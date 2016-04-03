@@ -1,0 +1,38 @@
+{
+  "name": "electrum-network-plugin",
+  "version": "1.0.0",
+  "description": "cordova plugin for accessing the electrum network",
+  "main": "build/bundle.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova",
+    "bitcoin",
+    "electrum"
+  ],
+  "cordova": {
+    "id": "electrum-network-plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "author": "Stefan Huber <stefan.huber@beyondit.at>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "awesome-typescript-loader": "0.17.0-rc.4",
+    "gulp": "^3.9.1",
+    "gulp-jasmine": "^2.3.0",
+    "gulp-typescript": "^2.12.1",
+    "gulp-util": "^3.0.7",
+    "webpack": "^1.12.14"
+  },
+  "dependencies": {
+    "es6-shim": "^0.35.0"
+  }
+}

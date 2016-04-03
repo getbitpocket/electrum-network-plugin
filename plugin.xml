@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="electrum-network-plugin"
+        version="1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <name>Electrum network plugin</name>
+    <description>Cordova plugin for accessing the electrum network</description>
+    <author>Stefan Huber</author>
+    <keywords>bitcoin, electrum</keywords>
+    <license>Apache 2.0 License</license>
+    
+    <asset src="build/bundle.js" target="electrum-network-plugin.js"></asset>
+        
+    <dependency id="cordova-plugin-chrome-apps-sockets-tcp" url="https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-sockets-tcp" commit="master" />
+
+</plugin>
