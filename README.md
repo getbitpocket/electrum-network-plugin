@@ -37,7 +37,7 @@ peer.on('connected', function() {
     
     peer.sendRequest({ "id": 1, "method":"blockchain.address.get_balance", "params":["1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"] });
     
-    networkDiscovery.on('response', function(response) {
+    peer.on('response', function(response) {
         console.log(response);
     });
     
