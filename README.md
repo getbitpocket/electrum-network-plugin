@@ -14,7 +14,7 @@
 var networkDiscovery = new electrum.NetworkDiscovery();
 networkDiscovery.init();
 
-NetworkDiscovery.on('peers:discovered', function() {
+networkDiscovery.on('peers:discovered', function() {
     
     networkDiscovery.sendRandomRequest({ "id": 1, "method":"blockchain.address.get_balance", "params":["1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"] });
     
@@ -48,11 +48,13 @@ peer.on('connected', function() {
 ## Build Project
 
 `npm install`
+
 `gulp build`
 
 ## Running Unit Tests
 
 `npm install`
+
 `gulp test`
 
 ## Running Integration Tests
