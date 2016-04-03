@@ -1,5 +1,7 @@
 # Cordova Plugin for accessing Electrum network servers
 
+Electrum network documentation can be found here: [http://docs.electrum.org/en/latest/protocol.html](http://docs.electrum.org/en/latest/protocol.html)
+
 ## Installation
 
  - Add the Plugin to your Cordova project: `cordova plugin add https://github.com/getbitpocket/electrum-network-plugin`
