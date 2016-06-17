@@ -1,4 +1,5 @@
 exports.defineAutoTests = function() {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
     describe('testing messaging a server', function() {
         
@@ -6,12 +7,12 @@ exports.defineAutoTests = function() {
             var peer = network.getPeer();                
             peer.connect();
             
-            peer.on('connected', function() {
+            peer.once('connected', function() {
                 success(peer);
             });
             
-            peer.on('error', function() {
-                console.error("cannot connect to peer");
+            peer.once('error', function() {
+                console.error("cannot connect to peer, try another peer");
                 connectToRandomPeer(network, success);
             });           
         };
@@ -40,28 +41,35 @@ exports.defineAutoTests = function() {
             
             network.on('peers:discovered', function() {                
                 connectToRandomPeer(network, function(peer) {
-                    expect(peer.getNetworkStatus()).toEqual('connected');
-                    done();
+                    expect(peer.getNetworkStatus()).toEqual('connected');    
+
+                    peer.on('disconnected', function() {
+                        done();
+                    });
+
+                    peer.disconnect();      
                 });                               
             });
             
         });
         
         it('send random request', function(done) {
-            var network = new electrum.NetworkDiscovery();     
+            var network   = new electrum.NetworkDiscovery() ,
+                requestId = (Math.random() * 10000000).toFixed(0);
+            
             network.init();
             
-            network.on('peers:discovered', function() {                
+            network.on('peers:discovered', function() {                            
                 network.sendRandomRequest({
-                    "id": 1,
+                    "id": requestId,
                     "method": "blockchain.address.get_history",
-                    "params": ["1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"] 
+                    "params": ["14oDPV9v5MQGs1cYTdGT6vRJDdaZ15ih6W"] 
                 });                              
             });
             
             network.on('peers:response', function(response) {   
-                expect(response.id).toBe(1);
-                expect(response.result.length).toBeGreaterThan(10);                
+                expect(response.id).toEqual(requestId);
+                expect(response.result.length).toBeGreaterThan(10);                                
                 done();
             });
             
@@ -74,7 +82,26 @@ exports.defineAutoTests = function() {
             peer.on('error', function(e) {                
                 expect(e).toBeLessThan(0);
                 done();
+            });            
+        });
+
+        it('retrieve connected peer', function(done) {
+            var network = new electrum.NetworkDiscovery();
+            network.init();
+                     
+            network.on('peers:connected', function(peer) {
+                expect(peer.getNetworkStatus()).toEqual('connected');
+
+                peer.on('disconnected', function() {
+                    done();
+                });
+
+                peer.disconnect();
             });
+            
+            network.on('peers:discovered', function() {
+                network.getConnectedPeer();      
+            });                       
             
         });
                 

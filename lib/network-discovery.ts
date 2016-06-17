@@ -17,30 +17,32 @@ const DEFAULT_SERVERS: Array<NetworkPeer> = [
     {
         host : 'electrum0.electricnewyear.net',
         ports: {'t':50001, 's':50002}
+    } ,    
+    {
+        host : 'VPS.hsmiths.com' ,
+        ports : {'t':50001, 's':50002}
     } ,
     {
-        host : 'elec.luggs.co' ,
-        ports: {'t':80, 's':443}   
+        host : 'ELECTRUM.jdubya.info' ,
+        ports : {'t':50001, 's':50002}
     } ,
     {
-        host : 'electrum.online' ,
+        host : 'electrum.no-ip.org' ,
+        ports : {'t':50001, 's':50002, 'g':443}
+    } ,
+    {
+        host : 'us.electrum.be' ,
+        ports : {'t':50001, 's':50002}
+    } ,
+    {
+        host : 'bitcoins.sk' ,
+        ports : {'t':50001, 's':50002}
+    } ,
+    {
+        host : 'electrum.petrkr.net' ,
         ports : {'t':50001, 's':50002}
     }    
 ];
-        
-    /*
-
-    'VPS.hsmiths.com':{'t':'50001', 's':'50002'},
-    'ELECTRUM.jdubya.info':{'t':'50001', 's':'50002'},
-    'electrum.no-ip.org':{'t':'50001', 's':'50002', 'g':'443'},
-    'us.electrum.be':DEFAULT_PORTS,
-    'bitcoins.sk':{'t':'50001', 's':'50002'},
-    'electrum.petrkr.net':{'t':'50001', 's':'50002'},
-    'electrum.dragonzone.net':DEFAULT_PORTS,
-    'Electrum.hsmiths.com':{'t':'8080', 's':'995'},
-    'electrum3.hachre.de':{'t':'50001', 's':'50002'},
-    'btc.smsys.me':{'t':'110', 's':'995'},
-    */
 
 export class NetworkDiscovery extends EventEmitter {
     
@@ -110,6 +112,22 @@ export class NetworkDiscovery extends EventEmitter {
             index = Math.round(Math.random()*this.activePeers.length);
         }                
         return new Peer(this.activePeers[index].host,this.activePeers[index].ports.t);
+    }
+
+    getConnectedPeer(index: number = -1) : Promise<Peer> {
+        let peer = this.getPeer(index);
+        peer.connect();
+
+        return new Promise<Peer>((resolve, reject) => {            
+            peer.on('connected', () => {
+                this.emit('peers:connected', peer);
+                resolve(peer);
+            });
+            
+            peer.on('error', () => {           
+                resolve(this.getConnectedPeer());
+            });            
+        });
     }
         
     sendRandomRequest(request: {id?: any, method: string, params: Array<any>}) : NetworkDiscovery {

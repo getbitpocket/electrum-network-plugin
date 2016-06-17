@@ -1,22 +1,34 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var webpack = require('webpack');
-var jasmine = require('gulp-jasmine');
+var gulp        = require('gulp'),
+    source      = require('vinyl-source-stream'),
+    buffer      = require('vinyl-buffer'),
+    browserify  = require('browserify'),
+    tsify       = require('tsify'),
+    KarmaServer = require('karma').Server;
+
 
 gulp.task('build', function(done) {
-    webpack(require('./webpack.config.js'),function(err, stats) {
-        
-        if (err) {
-            throw new gutil.PluginError('webpack',err);
-        }
-        
-        gutil.log("Webpacked...");        
-        done();        
-    });
+    var b = browserify('./lib/index.ts', { standalone: 'electrum' }).plugin(tsify);
+
+    return b.bundle()
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest('./build/'));
 });
 
-gulp.task('test', ['build'], function() {
-    return gulp.src('spec/**/*.js')
-        .pipe(jasmine()); 
+
+gulp.task('test', ['build'], function(done) {
+  var server = new KarmaServer({
+    configFile: __dirname + '/karma.conf.js'
+  });
+  
+  server.on('run_complete', function (browsers, results){
+    if (results.failed) {
+      throw new Error('Karma: Tests Failed');
+    }
+        
+    done();
+  });
+  
+  server.start();  
 });
 

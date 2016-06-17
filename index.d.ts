@@ -16,6 +16,7 @@ interface NetworkDiscovery {
         
     init() : NetworkDiscovery;
     getPeer(index?: number) : Peer;
+    getConnectedPeer(index?: number) : Promise<Peer>;
     sendRandomRequest(request: {id?: any, method: string, params: Array<any>}) : NetworkDiscovery;
         
     on(event: string, eventHandler: ( (eventData?: any) => void ) ) : void; 

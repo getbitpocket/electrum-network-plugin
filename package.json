@@ -25,12 +25,15 @@
   "author": "Stefan Huber <stefan.huber@beyondit.at>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "awesome-typescript-loader": "0.17.0-rc.4",
+    "browserify": "^13.0.1",
     "gulp": "^3.9.1",
-    "gulp-jasmine": "^2.3.0",
-    "gulp-typescript": "^2.12.1",
-    "gulp-util": "^3.0.7",
-    "webpack": "^1.12.14"
+    "karma": "^0.13.22",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs-prebuilt": "^2.1.7",
+    "tsify": "^0.16.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
     "es6-shim": "^0.35.0"

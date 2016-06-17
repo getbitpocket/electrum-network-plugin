@@ -28,23 +28,29 @@ if (typeof document === 'object') {
         });
         
         chrome.sockets.tcp.onReceiveError.addListener((info) => {
-            console.log("error happend");
-            peers[info.socketId].onError(info.resultCode);
+            if (peers[info.socketId] instanceof Peer) {
+                peers[info.socketId].onError(info.resultCode);
+            } else {
+                chrome.sockets.tcp.close(info.socketId);
+            }
+            
         });            
         
     }, false);
 }
 
-
-const PEER_NETWORK_STATUS_CONNECTED: string    = 'connected';
-const PEER_NETWORK_STATUS_DISCONNECTED: string = 'disconnected';
+const PEER_NETWORK_OPERATION_TIMEOUT_CODE: number = -8000;
+const PEER_NETWORK_OPERATION_TIMEOUT: number      = 4500; 
+const PEER_NETWORK_STATUS_CONNECTED: string       = 'connected';
+const PEER_NETWORK_STATUS_DISCONNECTED: string    = 'disconnected';
 
 export class Peer extends EventEmitter {
     
     private socketId: number;
     private status: string = PEER_NETWORK_STATUS_DISCONNECTED;
     private partialMessage: string = "";
-        
+    private timeoutOccured: boolean = false; // a timeout occured within a network operation
+
     getNetworkStatus() : string {
         return this.status;
     }
@@ -69,16 +75,37 @@ export class Peer extends EventEmitter {
     constructor(private host: string, private port: number) {
         super();
     }
+
+    setTimeoutListener() : any {
+        return setTimeout(() => {
+            this.timeoutOccured = true;
+            this.onError(PEER_NETWORK_OPERATION_TIMEOUT_CODE);
+        }, PEER_NETWORK_OPERATION_TIMEOUT);
+    }
+
+    clearTimeoutListener(timeoutId: any) {
+        clearTimeout(timeoutId);
+        this.timeoutOccured = false;
+    }
     
-    connect() {
-        chrome.sockets.tcp.create((createInfo) => {            
+    connect() : Peer {
+        chrome.sockets.tcp.create((createInfo) => {
+            let timeoutId = this.setTimeoutListener();
+
             peers[createInfo.socketId] = this;
             this.socketId = createInfo.socketId;
             
             chrome.sockets.tcp.connect(createInfo.socketId,this.host,this.port,(result) => {
                 if (result === 0) {
                     this.status = PEER_NETWORK_STATUS_CONNECTED;
-                    this.emit(PEER_NETWORK_STATUS_CONNECTED);
+
+                    // if timeout occured, however after the timeout, for whatever reason a connection was established, disconnect!
+                    if (this.timeoutOccured) {
+                        this.disconnect();
+                    } else {
+                        this.emit(PEER_NETWORK_STATUS_CONNECTED);
+                        this.clearTimeoutListener(timeoutId);
+                    }                    
                 } else {
                     this.onError(result);
                 }
@@ -88,27 +115,34 @@ export class Peer extends EventEmitter {
         return this;
     }
     
-    disconnect() {
+    disconnect() : Peer {
         if (this.status === PEER_NETWORK_STATUS_CONNECTED) {
             chrome.sockets.tcp.disconnect(this.socketId, () => {
                 chrome.sockets.tcp.close(this.socketId);
                 this.status = PEER_NETWORK_STATUS_DISCONNECTED;
                 this.emit(PEER_NETWORK_STATUS_DISCONNECTED);
             });
+        } else {
+            chrome.sockets.tcp.close(this.socketId);
         }
                 
         return this;
     }
     
-    sendRequest(request: {id?: any, method: string, params: Array<any>}) {
+    sendRequest(request: {id?: any, method: string, params: Array<any>}) : Peer {
+        let timeoutId = this.setTimeoutListener();
+
         if (this.status === PEER_NETWORK_STATUS_CONNECTED) {
             let networkMessage = JSON.stringify(request) + "\n";
             let bufferedMessage = new Buffer(networkMessage);        
                             
             chrome.sockets.tcp.send(this.socketId, Util.transformToArrayBuffer(bufferedMessage), (sendInfo) => {
+                this.clearTimeoutListener(timeoutId);
                 this.emit('sent',sendInfo.resultCode);
             });
         }
+        
+        return this;
     }
         
     onReceive(response: any) {

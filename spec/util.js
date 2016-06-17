@@ -1,6 +1,3 @@
-var fs = require('fs');
-eval(fs.readFileSync(__dirname+'/../build/bundle.js')+'');
-
 describe('testing util functions', function() {
             
     var demoPeers = [
@@ -8,8 +5,7 @@ describe('testing util functions', function() {
         ["91.121.108.61", "electrum.xiro.co", ["v0.9", "p10000", "t", "s"]] ,
         ["188.122.91.11", "elec.luggs.co", ["v1.0", "p10000", "t80", "h81", "s443", "g"]]
     ];
-            
-            
+                        
     it('should be valid/invalid json', function() {
         expect(electrum.Util.isValidJSON('{"hello":"world"}')).toBe(true);
         expect(electrum.Util.isValidJSON('[{"hello":"world"},{"hello2":')).toBe(false);        

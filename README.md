@@ -61,7 +61,6 @@ peer.on('connected', function() {
 
 ## Running Integration Tests
 
- - Add tests as plugin `cordova plugin add https://github.com/getbitpocket/electrum-network-plugin.git#:/test`
- - Follow the [Cordova Plugins Tests](https://github.com/apache/cordova-plugin-test-framework#running-plugin-tests) guide
- - Run the tests by launching app `cordova emulate`
+ - Running the `./prepare-integration-tests.sh` will add a sibling folder and running respective tests
+ - Arguments for script `$1: run or emulate` or `$2: platform` e.g. `./prepare-integration-tests.sh run android`
 
