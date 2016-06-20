@@ -118,7 +118,7 @@ var NetworkDiscovery = (function (_super) {
     NetworkDiscovery.prototype.getPeer = function (index) {
         if (index === void 0) { index = -1; }
         if (index < 0 || index >= this.activePeers.length) {
-            index = Math.round(Math.random() * this.activePeers.length);
+            index = Math.floor(Math.random() * this.activePeers.length);
         }
         return new peer_1.Peer(this.activePeers[index].host, this.activePeers[index].ports.t);
     };

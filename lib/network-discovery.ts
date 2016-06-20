@@ -109,7 +109,7 @@ export class NetworkDiscovery extends EventEmitter {
      */
     getPeer(index: number = -1) : Peer {
         if (index < 0 || index >= this.activePeers.length) {
-            index = Math.round(Math.random()*this.activePeers.length);
+            index = Math.floor(Math.random()*this.activePeers.length);
         }                
         return new Peer(this.activePeers[index].host,this.activePeers[index].ports.t);
     }
