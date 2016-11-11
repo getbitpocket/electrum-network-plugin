@@ -15,7 +15,7 @@ const DEFAULT_SERVERS: Array<NetworkPeer> = [
         ports: {'t': 50001, 's': 110}
     } ,
     {
-        host : 'electrum0.electricnewyear.net',
+        host : 'ELECTRUM.top-master.com',
         ports: {'t':50001, 's':50002}
     } ,    
     {
@@ -39,7 +39,31 @@ const DEFAULT_SERVERS: Array<NetworkPeer> = [
         ports : {'t':50001, 's':50002}
     } ,
     {
-        host : 'electrum.petrkr.net' ,
+        host : 'us1.einfachmalnettsein.de' ,
+        ports : {'t':50001, 's':50002}
+    } ,
+    {
+        host : 'electrum.dragonzone.net' ,
+        ports : {'t':50001, 's':50002}
+    } ,
+    {
+        host : 'Electrum.hsmiths.com' ,
+        ports : {'t':8080, 's':995} 
+    } ,
+    {
+        host : 'electrum3.hachre.de' ,
+        ports : {'t':50001, 's':50002}
+    } ,
+    {
+        host : 'elec.luggs.co' ,
+        ports : {'t':80, 's':443}
+    } ,
+    {
+        host : 'btc.smsys.me' ,
+        ports : {'t':110, 's':995}
+    } ,
+    {
+        host : 'electrum.online' ,
         ports : {'t':50001, 's':50002}
     }    
 ];
@@ -57,9 +81,10 @@ export class NetworkDiscovery extends EventEmitter {
         super();       
     }
     
-    retrievePeers(peerServer: string, port: number) : Promise<any> {       
-        let peer = new Peer(peerServer, port);
+    retrievePeers(peerServer: string, port: number, secure: boolean = false) : Promise<any> {       
+        let peer = new Peer(peerServer, port, secure);        
         peer.connect();
+        console.log("Try connecting to peer: ", peerServer, port);
         
         return new Promise<any>((resolve, reject) => {               
             peer.on('connected', () => {
@@ -81,8 +106,8 @@ export class NetworkDiscovery extends EventEmitter {
         });              
     }
     
-    discoverPeers(serverIndex: number = 0) : NetworkDiscovery {        
-        this.retrievePeers(DEFAULT_SERVERS[serverIndex].host, DEFAULT_SERVERS[serverIndex].ports.t)
+    discoverPeers(serverIndex: number = 0, secure: boolean = false) : NetworkDiscovery {        
+        this.retrievePeers(DEFAULT_SERVERS[serverIndex].host, secure ? DEFAULT_SERVERS[serverIndex].ports.s : DEFAULT_SERVERS[serverIndex].ports.t, secure)
             .then((response) => {
                 this.activePeers = Util.parsePeers(response.result);
                 this.ready = true;
@@ -91,7 +116,12 @@ export class NetworkDiscovery extends EventEmitter {
             .catch(() => {
                 if (serverIndex < DEFAULT_SERVERS.length) {
                     this.emit('peers:inactive',DEFAULT_SERVERS[serverIndex]);
-                    this.discoverPeers(serverIndex++);                    
+
+                    if (secure) {
+                        this.discoverPeers(++serverIndex);
+                    } else {
+                        this.discoverPeers(serverIndex, true);
+                    }                    
                 } else {
                     this.emit('peers:error'); // no active default peer
                 }

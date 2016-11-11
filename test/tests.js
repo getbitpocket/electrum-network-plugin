@@ -1,5 +1,5 @@
 exports.defineAutoTests = function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
     describe('testing messaging a server', function() {
         
@@ -34,7 +34,7 @@ exports.defineAutoTests = function() {
             });
                                             
         });
-                
+
         it('connect to random peer after discovery', function(done) {
             var network = new electrum.NetworkDiscovery();     
             network.init();
@@ -103,6 +103,21 @@ exports.defineAutoTests = function() {
                 network.getConnectedPeer();      
             });                       
             
+        });
+
+        it('try connecting to a peer securely', function(done) {
+            var peer = new electrum.Peer('electrum.trouth.net',50002, true);            
+            peer.connect();
+            
+            peer.on('connected', function() {                
+                expect(true).toBe(true);
+                done();
+            });     
+
+            peer.on('error', function() {
+                fail("Cannot securely connect to peer");
+                done();
+            })
         });
                 
     });

@@ -185,8 +185,8 @@ declare namespace chrome.sockets.tcp {
         enable: boolean, delay: number, callback: (result: number) => void): void;
 
     export function setNoDelay(socketId: number, noDelay: boolean, callback: (result: number) => void): void;
-    export function connect(socketId: number,
-        peerAddress: string, peerPort: number, callback: (result: number) => void): void;
+    export function connect(socketId: number, peerAddress: string, peerPort: number, callback: (result: number) => void): void;
+	export function secure(socketId: number, options:any, callback: (result: number) => void): void;
     export function disconnect(socketId: number, callback?: () => void): void;
     export function send(socketId: number, data: ArrayBuffer, callback: (sendInfo: SendInfo) => void): void;
     export function close(socketId: number, callback?: () => void): void;

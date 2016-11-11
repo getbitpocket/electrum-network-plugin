@@ -72,7 +72,12 @@ export class Peer extends EventEmitter {
         return this.partialMessage.length > 0 ? true : false;
     }
     
-    constructor(private host: string, private port: number) {
+    /**
+     * host: hostname
+     * port
+     * secure, tells wether ssl or not
+     */
+    constructor(private host: string, private port: number, private secure: boolean = false) {
         super();
     }
 
@@ -80,12 +85,25 @@ export class Peer extends EventEmitter {
         return setTimeout(() => {
             this.timeoutOccured = true;
             this.onError(PEER_NETWORK_OPERATION_TIMEOUT_CODE);
+            console.error("timeout occured",this.host, this.port, this.secure);
         }, PEER_NETWORK_OPERATION_TIMEOUT);
     }
 
     clearTimeoutListener(timeoutId: any) {
         clearTimeout(timeoutId);
         this.timeoutOccured = false;
+    }
+
+    connected(timeoutId) : void {
+        this.status = PEER_NETWORK_STATUS_CONNECTED;
+
+        // if timeout occured, however after the timeout, for whatever reason a connection was established, disconnect!
+        if (this.timeoutOccured) {
+            this.disconnect();
+        } else {
+            this.emit(PEER_NETWORK_STATUS_CONNECTED);
+            this.clearTimeoutListener(timeoutId);
+        }    
     }
     
     connect() : Peer {
@@ -94,22 +112,32 @@ export class Peer extends EventEmitter {
 
             peers[createInfo.socketId] = this;
             this.socketId = createInfo.socketId;
-            
-            chrome.sockets.tcp.connect(createInfo.socketId,this.host,this.port,(result) => {
-                if (result === 0) {
-                    this.status = PEER_NETWORK_STATUS_CONNECTED;
 
-                    // if timeout occured, however after the timeout, for whatever reason a connection was established, disconnect!
-                    if (this.timeoutOccured) {
-                        this.disconnect();
+            if (this.secure) { // TODO: there is a problem with self-signed certificates
+                chrome.sockets.tcp.setPaused(createInfo.socketId, true, () => {
+                    chrome.sockets.tcp.connect(createInfo.socketId,this.host,this.port,(result) => {
+                        if (result === 0) { 
+                            chrome.sockets.tcp.secure(createInfo.socketId, {tlsVersion: {min: 'ssl3', max: 'tls1.2'}}, (result) => {
+                                if (result === 0) {
+                                    this.connected(timeoutId);
+                                } else {
+                                    this.onError(result);
+                                }
+                            });                                      
+                        } else {
+                            this.onError(result);
+                        }
+                    });
+                });
+            } else {
+                chrome.sockets.tcp.connect(createInfo.socketId,this.host,this.port,(result) => {
+                    if (result === 0) {
+                        this.connected(timeoutId);
                     } else {
-                        this.emit(PEER_NETWORK_STATUS_CONNECTED);
-                        this.clearTimeoutListener(timeoutId);
-                    }                    
-                } else {
-                    this.onError(result);
-                }
-            });          
+                        this.onError(result);
+                    }
+                });
+            }
         });
         
         return this;
