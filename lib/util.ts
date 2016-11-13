@@ -9,8 +9,7 @@ export class Util {
         let output = [];
         
         for (let peer of result) {           
-            
-            if (removeOnion && peer[1].includes(".onion")) { // ignore onion peers
+            if (removeOnion && peer[1].search(/\.onion/) > 0) { // ignore onion peers
                 continue;
             }
             

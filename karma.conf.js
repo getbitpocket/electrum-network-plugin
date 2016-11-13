@@ -16,8 +16,9 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [        
+        'spec/*.js',
         'build/bundle.js' ,
-        'spec/*.js'
+        
     ],
     
     // test results reporter to use

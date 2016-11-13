@@ -1,6 +1,4 @@
-/// <reference path="../typings/index.d.ts" />
-
-require('es6-shim');
+// import 'es6-shim';
 
 export * from './peer';
 export * from './network-discovery';

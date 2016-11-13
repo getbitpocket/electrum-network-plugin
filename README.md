@@ -5,7 +5,7 @@ Electrum network protocol documentation can be found here: [http://docs.electrum
 ## Installation
 
  - Add the Plugin to your Cordova project: `cordova plugin add https://github.com/getbitpocket/electrum-network-plugin`
- - Inside the `index.html` of your Cordova project add the script: `<script type="text/javascript" src="electrum-network-plugin.js"></script>` (A better solution might be found in the future, which makes this obsolete, however for now it is problematic to automatically add browserified js files)
+ - Depending on the Promise support of your target environment (http://caniuse.com/#feat=promises), the [es6-shim](https://github.com/paulmillr/es6-shim) javascript library might be included
 
 ## Quick Examples
 
@@ -51,16 +51,21 @@ peer.on('connected', function() {
 
 `npm install`
 
-`gulp build`
+`npm run build`
 
 ## Running Unit Tests
 
 `npm install`
 
-`gulp test`
+`npm test`
 
 ## Running Integration Tests
 
- - Running the `./prepare-integration-tests.sh` will add a sibling folder and running respective tests
- - Arguments for script `$1: run or emulate` or `$2: platform` e.g. `./prepare-integration-tests.sh run android`
+ - `npm install`
+ - `npm run integration -- run android` or `npm run integration -- run ios` for testing on real devices
+ - `npm run integration -- emulate android` or `npm run integration -- emulate ios` for testing on emulator
 
+## Roadmap
+
+ - This plugin should also work with altcoins, which support electrum
+ - Observable (rx.js) rather of Promise for Requests

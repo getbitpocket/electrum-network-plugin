@@ -10,7 +10,9 @@
     <keywords>bitcoin, electrum</keywords>
     <license>Apache 2.0 License</license>
     
-    <asset src="build/bundle.js" target="electrum-network-plugin.js"></asset>
+    <js-module src="build/bundle.js" name="electrum">
+        <clobbers target="electrum" />
+    </js-module>
         
     <dependency id="cordova-plugin-chrome-apps-sockets-tcp" url="https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-sockets-tcp" commit="master" />
 

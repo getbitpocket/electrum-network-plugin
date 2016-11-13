@@ -1,4 +1,8 @@
+var exports = {};
+
 describe('testing util functions', function() {
+
+    var electrum = exports;
             
     var demoPeers = [
         ["fdkhv2bb7hqel2e7.onion", "fdkhv2bb7hqel2e7.onion", ["v1.0", "p10000", "t", "s"]] ,

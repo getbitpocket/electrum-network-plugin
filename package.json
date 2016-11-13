@@ -5,7 +5,9 @@
   "main": "build/bundle.js",
   "typings": "index.d.ts",
   "scripts": {
-    "test": "gulp test"
+    "build": "rollup -c",
+    "test": "npm run build && karma start",
+    "integration": "./prepare-integration-tests.sh"
   },
   "keywords": [
     "ecosystem:cordova",
@@ -25,17 +27,20 @@
   "author": "Stefan Huber <stefan.huber@beyondit.at>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "gulp": "^3.9.1",
+    "jasmine-core": "^2.5.2",
     "karma": "^0.13.22",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.7",
-    "tsify": "^0.16.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "rollup": "^0.36.3",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-node-builtins": "^2.0.0",
+    "rollup-plugin-node-globals": "^1.0.9",
+    "rollup-plugin-typescript": "^0.8.1"
   },
   "dependencies": {
-    "es6-shim": "^0.35.0"
+    "@types/cordova": "0.0.34",
+    "@types/es6-shim": "^0.31.32",
+    "@types/node": "^6.0.46"
   }
 }
